@@ -4,56 +4,58 @@ import {
   applyHaversineFormula
 } from "../../../src/services/distances-calculator-service";
 
-describe("calculateDistance", () => {
-  it("should calculate the distance between two coordinates in kilometers", () => {
-    const origin = { lat: 0, long: 0 };
-    const destination = { lat: 0, long: 1 };
+describe("Distances Calculator Service Unit Tests", () => {
+  describe("toRadius", () => {
+    it("should convert degrees to radians", () => {
+      const degrees = 180;
 
-    const result = calculateDistance(origin, destination);
+      const result = toRadius(degrees);
 
-    expect(typeof result).toBe("number");
-    expect(result).toBeGreaterThan(0);
+      expect(result).toBe(Math.PI);
+    });
   });
 
-  it("should return a rounded integer value", () => {
-    const origin = { lat: -23.55052, long: -46.633308 };
-    const destination = { lat: -22.906847, long: -43.172897 };
+  describe("applyHaversineFormula", () => {
+    it("should calculate distance based on haversine formula", () => {
+      const lat1 = 0;
+      const lat2 = 0;
+      const dLat = 0;
+      const dLon = toRadius(1);
+      const radius = 6371;
 
-    const result = calculateDistance(origin, destination);
-
-    expect(Number.isInteger(result)).toBe(true);
+      const result = applyHaversineFormula(lat1, lat2, dLat, dLon, radius);
+      
+      expect(result).toBeCloseTo(111.19, 2);
+    });
   });
 
-  it("should calculate distance in miles when isMiles is true", () => {
-    const origin = { lat: 0, long: 0 };
-    const destination = { lat: 0, long: 1 };
+  describe("calculateDistance", () => {
+    it("should calculate distance in kilometers by default", () => {
+      const origin = { lat: 0, long: 0 };
+      const destination = { lat: 0, long: 1 };
 
-    const km = calculateDistance(origin, destination);
-    const miles = calculateDistance(origin, destination, true);
+      const result = calculateDistance(origin, destination);
 
-    expect(miles).toBeLessThan(km);
-  });
-});
+      expect(result).toBeCloseTo(111, 0);
+    });
 
-describe("toRadius", () => {
-  it("should convert degrees to radians", () => {
-    const result = toRadius(180);
 
-    expect(result).toBeCloseTo(Math.PI);
-  });
-});
+    it("should return a rounded integer value", () => {
+      const origin = { lat: -23.55052, long: -46.633308 };
+      const destination = { lat: -22.906847, long: -43.172897 };
 
-describe("applyHaversineFormula", () => {
-  it("should return a number greater than zero", () => {
-    const lat1 = toRadius(0);
-    const lat2 = toRadius(0);
-    const dLat = toRadius(0);
-    const dLon = toRadius(1);
-    const radius = 6371;
+      const result = calculateDistance(origin, destination);
 
-    const result = applyHaversineFormula(lat1, lat2, dLat, dLon, radius);
+      expect(Number.isInteger(result)).toBe(true);
+    });
 
-    expect(typeof result).toBe("number");
-    expect(result).toBeGreaterThan(0);
+    it("should calculate distance in miles when isMiles is true", () => {
+      const origin = { lat: 0, long: 0 };
+      const destination = { lat: 0, long: 1 };
+
+      const result = calculateDistance(origin, destination, true);
+
+      expect(result).toBeCloseTo(69, 0);
+    });
   });
 });
